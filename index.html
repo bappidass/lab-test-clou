@@ -1,82 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Gallery</title>
-
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background-color: #f0f8ff;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      h1 {
-        text-align: center;
-        color: #0066cc;
-        margin-top: 20px;
-      }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
-      .gallery-container {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        width: 100%;
-        padding: 40px 0;
-      }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-      .gallery-container img {
-        width: 300px;
-        height: 300px;
-        object-fit: fill;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-        object-fit: cover;
-      }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
 
-      .gallery-container img:hover {
-        transform: scale(1.15);
-        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-      }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .category-btn {
+            padding: 12px 28px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1) rotate(1deg);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .overlay-text {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
-  </head>
-  <body>
-    <h1>Image Gallery Website</h1>
-     <h1 style="color: black;">car category</h1>
-    <div class="gallery-container" id="gallery"></div>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ Gallery</h1>
+            <p class="subtitle">Explore beautiful collections</p>
+        </header>
+
+        <div class="category-nav">
+            <button class="category-btn active" data-category="cars">🚗 Cars</button>
+            <button class="category-btn" data-category="nature">🌿 Nature</button>
+            <button class="category-btn" data-category="architecture">🏢 Architecture</button>
+            <button class="category-btn" data-category="food">🍕 Food</button>
+            <button class="category-btn" data-category="travel">✈️ Travel</button>
+        </div>
+
+        <div class="gallery-container" id="gallery"></div>
+    </div>
 
     <script>
-      const galleryData = [
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-        "images.jpeg",
-      ];
+        const galleryData = {
+            cars: [
+                {
+                    src: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop',
+                    name: 'Red Sports Car'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=400&fit=crop',
+                    name: 'Modern Sedan'
+                },
+             
+               
+               
+                {
+                    src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
+                    name: 'Muscle Car'
+                }
+            ],
+            nature: [
+                {
+                    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+                    name: 'Mountain Peak'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+                    name: 'Forest Trail'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400&h=400&fit=crop',
+                    name: 'Ocean Waves'
+                },
+               
+              
+                {
+                    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+                    name: 'Green Valley'
+                }
+            ],
+            architecture: [
+            
+                {
+                    src: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=400&fit=crop',
+                    name: 'Urban Design'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=400&fit=crop',
+                    name: 'Contemporary Art'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=400&h=400&fit=crop',
+                    name: 'Skyscraper'
+                },
+                
+            ],
+            food: [
+                {
+                    src: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+                    name: 'Delicious Pizza'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop',
+                    name: 'Gourmet Burger'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+                    name: 'Pasta Dish'
+                },
+             
+                
+                {
+                    src: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+                    name: 'Salad Bowl'
+                }
+            ],
+            travel: [
+                {
+                    src: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop',
+                    name: 'Paris Tower'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+                    name: 'Swiss Alps'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+                    name: 'Tropical Paradise'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop',
+                    name: 'Desert Landscape'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=400&fit=crop',
+                    name: 'City Lights'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop',
+                    name: 'Mountain Adventure'
+                }
+            ]
+        };
 
-      const galleryContainer = document.getElementById("gallery");
+        const gallery = document.getElementById('gallery');
+        const categoryBtns = document.querySelectorAll('.category-btn');
 
-      galleryData.forEach((imgSrc) => {
-        const imgElement = document.createElement("img");
-        imgElement.src = imgSrc;
-        imgElement.alt = "Gallery Image";
-        galleryContainer.appendChild(imgElement);
-      });
+        function loadGallery(category) {
+            gallery.innerHTML = '';
+            galleryData[category].forEach(image => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <img src="${image.src}" alt="${image.name}" loading="lazy">
+                    <div class="gallery-overlay">
+                        <div class="overlay-text">${image.name}</div>
+                    </div>
+                `;
+                gallery.appendChild(item);
+            });
+        }
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                loadGallery(btn.dataset.category);
+            });
+        });
+
+
+        loadGallery('cars');
     </script>
-  </body>
+</body>
 </html>
