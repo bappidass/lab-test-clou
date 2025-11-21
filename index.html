@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Gallery</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f0f8ff;
+      }
+
+      h1 {
+        text-align: center;
+        color: #0066cc;
+        margin-top: 20px;
+      }
+
+      .gallery-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        padding: 40px 0;
+      }
+
+      .gallery-container img {
+        width: 150px;
+        height: 150px;
+        object-fit: fill;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        object-fit: cover;
+      }
+
+      .gallery-container img:hover {
+        transform: scale(1.15);
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Image Gallery Website</h1>
+     <h1 style="color: black;">car category</h1>
+    <div class="gallery-container" id="gallery"></div>
+
+    <script>
+      const galleryData = [
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+        "images.jpeg",
+      ];
+
+      const galleryContainer = document.getElementById("gallery");
+
+      galleryData.forEach((imgSrc) => {
+        const imgElement = document.createElement("img");
+        imgElement.src = imgSrc;
+        imgElement.alt = "Gallery Image";
+        galleryContainer.appendChild(imgElement);
+      });
+    </script>
+  </body>
+</html>
